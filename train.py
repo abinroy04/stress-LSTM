@@ -4,6 +4,7 @@ from torch.utils.data import DataLoader
 import numpy as np
 from tqdm import tqdm
 import os
+from dotenv import load_dotenv
 import json
 import argparse
 from model import StressDetectionLSTM
@@ -12,6 +13,8 @@ from data_collator import DataCollatorSpeechSeq2SeqWithPadding
 from transformers import get_linear_schedule_with_warmup, AutoTokenizer, AutoFeatureExtractor
 from processor import DSProcessor
 from sklearn.metrics import f1_score, precision_score, recall_score
+
+load_dotenv()
 
 # Hardcoded configuration
 CONFIG = {
@@ -39,7 +42,7 @@ CONFIG = {
     
     # Other settings
     "transcription_column_name": "transcription",
-    "hf_token": "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"  # Add the HF token here
+    "hf_token": os.environ['HF_TOKEN'] # Add the HF token here
 }
 
 # Create a simple processor that only handles text tokenization - moved outside main() to be picklable

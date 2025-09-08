@@ -5,11 +5,16 @@ from scipy.io import wavfile
 import argparse
 import json
 import os
+from dotenv import load_dotenv
 from transformers import Wav2Vec2Processor
 from datasets import load_dataset
 from tqdm import tqdm
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 from huggingface_hub import login
+
+load_dotenv()
+
+os.environ["HF_TOKEN"] = os.getenv("HF_TOKEN")
 
 # Hardcoded configuration
 CONFIG = {
@@ -17,7 +22,7 @@ CONFIG = {
     "output_file": None,                                  # Will be generated from audio filename
     "wav2vec_model": "facebook/wav2vec2-base",           # Should match the model used for training
     "hf_dataset": "abinroy04/ITA-timed",           # HuggingFace dataset for evaluation
-    "hf_token": "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", # HuggingFace API token
+    "hf_token": os.getenv("HF_TOKEN"), # HuggingFace API token
     "split": "test",                                      # Dataset split to use
     "max_samples": None                                   # Maximum samples to process (None = all)
 }
