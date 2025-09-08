@@ -14,7 +14,7 @@ from huggingface_hub import login
 
 load_dotenv()
 
-os.environ["HF_TOKEN"] = os.getenv("HF_TOKEN")
+os.environ["HF_TOKEN"] = os.environ.get("HF_TOKEN")
 
 # Hardcoded configuration
 CONFIG = {
@@ -22,7 +22,7 @@ CONFIG = {
     "output_file": None,                                  # Will be generated from audio filename
     "wav2vec_model": "facebook/wav2vec2-base",           # Should match the model used for training
     "hf_dataset": "abinroy04/ITA-timed",           # HuggingFace dataset for evaluation
-    "hf_token": os.getenv("HF_TOKEN"), # HuggingFace API token
+    "hf_token": os.environ.get("HF_TOKEN"), # HuggingFace API token
     "split": "test",                                      # Dataset split to use
     "max_samples": None                                   # Maximum samples to process (None = all)
 }

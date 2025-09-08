@@ -520,7 +520,7 @@ class PreprocessedITAStressLoader(PreprocessedDataLoader):
             save_path = "./whistress_preprocessed_data"
         
         # Update the HF token with a valid one
-        hf_token = "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"
+        hf_token = os.environ.get("HF_TOKEN")
         
         # Initialize the parent class
         super().__init__(
@@ -557,7 +557,7 @@ class PreprocessedITATimeLoader(PreprocessedDataLoader):
             save_path = "./whistress_preprocessed_data"
         
         # Use the correct dataset name for ITA-timed
-        hf_token = "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"
+        hf_token = os.environ.get("HF_TOKEN")
         
         print("🔧 DEBUG: Initializing ITA-timed loader...")
         

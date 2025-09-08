@@ -42,7 +42,7 @@ CONFIG = {
     
     # Other settings
     "transcription_column_name": "transcription",
-    "hf_token": os.environ['HF_TOKEN'] # Add the HF token here
+    "hf_token": os.environ.get("HF_TOKEN")
 }
 
 # Create a simple processor that only handles text tokenization - moved outside main() to be picklable
