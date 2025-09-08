@@ -4,6 +4,7 @@ import torch.nn.functional as F
 from transformers import Wav2Vec2Model, Wav2Vec2Processor
 import numpy as np
 import os
+import sys
 
 class StressDetectionLSTM(nn.Module):
     """
@@ -92,10 +93,7 @@ class StressDetectionLSTM(nn.Module):
                     return self.wav2vec_model(wav2vec_inputs).last_hidden_state
                 except Exception as e:
                     print(f"ERROR processing wav2vec_inputs: {e}")
-                    # Create dummy tensor with expected shape
-                    batch_size = wav2vec_inputs.shape[0] if len(wav2vec_inputs.shape) > 0 else 1
-                    seq_len = wav2vec_inputs.shape[1] if len(wav2vec_inputs.shape) > 1 else 100
-                    return torch.zeros((batch_size, seq_len, self.wav2vec_feature_dim), device=device)
+                    sys.exit()
         
         # Otherwise, extract from audio using input_features
         if 'input_features' in batch:
@@ -129,10 +127,8 @@ class StressDetectionLSTM(nn.Module):
                 with torch.no_grad():
                     features = self.wav2vec_model(features).last_hidden_state
             else:
-                # Create dummy tensor with expected shape for severe errors
-                print("ERROR: Cannot determine feature dimensions. Creating dummy features.")
-                seq_len = 100  # Arbitrary sequence length
-                features = torch.zeros((batch_size, seq_len, self.wav2vec_feature_dim), device=features.device)
+                print("ERROR: Cannot determine feature dimensions. Exiting.")
+                sys.exit()
                 
         # Now we should have proper 3D tensor
         batch_size = features.shape[0]
@@ -186,9 +182,8 @@ class StressDetectionLSTM(nn.Module):
                     start_idx = max(0, int(word_info['start'] * feature_rate))
                     end_idx = min(sample_features.shape[0], int(word_info['end'] * feature_rate))
                 else:
-                    # Handle unexpected format by creating dummy indices
-                    print(f"WARNING: Unexpected word_info format: {type(word_info)}. Creating dummy boundary.")
-                    os.exit()
+                    print(f"WARNING: Unexpected word_info format: {type(word_info)}. ")
+                    sys.exit()
                 
                 # Ensure valid range - use at least one frame if start=end
                 if start_idx == end_idx:
@@ -301,15 +296,10 @@ class StressDetectionLSTM(nn.Module):
                 if len(valid_labels) > 0:
                     loss_fn = nn.CrossEntropyLoss()
                     loss = loss_fn(valid_logits, valid_labels)
-                else:
-                    # Create dummy loss if no valid labels
-                    loss = torch.tensor(0.0, device=logits.device, requires_grad=True)
-                    print("WARNING: No valid labels found for loss calculation")
             
             except Exception as e:
-                # Create a dummy loss for robustness
                 print(f"ERROR calculating loss: {e}")
-                loss = torch.tensor(0.0, device=logits.device, requires_grad=True)
+                sys.exit()
         
         return {
             'logits': logits,

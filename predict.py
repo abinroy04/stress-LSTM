@@ -101,25 +101,7 @@ def predict_stress(model_path=CONFIG["model_path"], audio_file=None, audio=None,
     with torch.no_grad():
         wav2vec_inputs = inputs.input_values.to(device)
         wav2vec_features = model.wav2vec_model(wav2vec_inputs).last_hidden_state
-    
-    
-    # Ensure word_boundaries is properly formatted (list of dictionaries)
-    if isinstance(word_boundaries, list):
-        # Check if the first item is a string - convert if needed
-        if word_boundaries and isinstance(word_boundaries[0], str):
-            # Convert list of strings to proper format
-            words = word_boundaries
-            # Create dummy boundaries with even spacing
-            audio_duration = len(audio['array']) / audio['sampling_rate']
-            word_duration = audio_duration / len(words)
-            word_boundaries = [
-                {
-                    'word': word,
-                    'start': idx * word_duration,
-                    'end': (idx + 1) * word_duration
-                }
-                for idx, word in enumerate(words)
-            ]
+
     
     # Predict stress
     predictions = model.predict(wav2vec_features.squeeze(0), word_boundaries)
